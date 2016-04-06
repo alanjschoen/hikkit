@@ -167,7 +167,7 @@ def autoHike(data):
         
 
 
-shapefile_name = "../data/AT_Centerline_12-23-2014/at_centerline"
+shapefile_name = "../testdata/AT_Centerline_12-23-2014/at_centerline"
 cLine = CenterLine(shapefile_name)
 print "Number of records: " + str(len(cLine.data))
 nSeg = len(cLine.data)

@@ -108,9 +108,13 @@ class CenterLine:
             segInfo.append((i, segB, segE))
         # go through each segment and find the next segment
         queue = list(segInfo)
-        curpt = np.array([-84.1939, 34.6272]) #start at springer
-        endpt = np.array([-68.9216, 45.9044]) #end at Katahdin
-        hike_path = []
+
+        # Set start and end points to Springer and Katahdin
+        # Coords of Springer: 34.6272° N, 84.1939° W
+        # Coords of Katahdin: 45.9044° N, 68.9216° W
+        curpt = np.array([-84.1939, 34.6272])
+        endpt = np.array([-68.9216, 45.9044])
+        hikePath = []
         hikeData = []
         while queue:
             nQ = len(queue)
@@ -128,47 +132,12 @@ class CenterLine:
                 data[next_sInd]["POINTS"] = data[next_sInd]["POINTS"][::-1,:]
             curpt = data[next_sInd]["POINTS"][-1,:]
             hikeData.append(data[next_sInd])
-            hike_path.append(next_sInd)
+            hikePath.append(next_sInd)
             del queue[next_qInd%nQ]
         self.data = hikeData
         self.unused = [data[q[0]] for q in queue]
             
-            
-            
-
-shapefile_name = "../AT_Centerline_12-23-2014/at_centerline"
-cLine = CenterLine(shapefile_name)
-print "Number of records: " + str(len(cLine.data))
-npts = len(cLine.data)
-
-ll = np.zeros([npts,2])
-ur = np.zeros([npts,2])
-boxSizes = np.zeros([npts,1])
-for (ind,seg) in enumerate(cLine.data):
-    ll[ind,:] = seg["BBOX"][0:2]
-    ur[ind,:] = seg["BBOX"][2:4]
-    boxSizes[ind] = coords2dist(seg["BBOX"][0:2], seg["BBOX"][2:4])    
-    
-"""
-# Plot histogram of box sizes
-n, bins, patches = plt.hist(boxSizes, 25, normed=1, facecolor='green', alpha=0.75)
-plt.xlabel('Diagonal Miles')
-plt.ylabel('Count')
-plt.title('Histogram of BBOX sizes')
-plt.grid(True)
-plt.show()
-"""
-
-# dataSorted = []
-# llSorted = ll[ll[:,1].argsort(),:]
-# for i in sorted(enumerate(ll[:,1]), key=lambda x:x[1]):
-#     dataSorted.append(cLine.data[i[0]])
-#plt.plot(llSorted[:,0], llSorted[:,1], 'r--')
-#plt.plot([-84.1939],[34.6272], 'ro', [-68.9216],[45.9044], 'ro')
-
-# Coords of springer: 34.6272° N, 84.1939° W
-# Coords of Katahdin: 45.9044° N, 68.9216° W
-
+# Function to plot the map (not part of object)
 def plotMap(line):
     plt.figure(num=None, figsize=(12, 9), dpi=150, facecolor='w', edgecolor='k')
     # Plot AT centerline
@@ -186,7 +155,7 @@ def plotMap(line):
     shapename = 'admin_1_states_provinces_lakes_shp'
     states_shp = shpreader.natural_earth(resolution='110m',
                                              category='cultural', name=shapename)
-    # turn the lons and lats into a shapely LineString
+    # convert to Shapely type
     track = sgeom.LineString(line)
     for state in shpreader.Reader(states_shp).geometries():
         # pick a default color for the land with a black outline,
@@ -198,13 +167,22 @@ def plotMap(line):
         ax.add_geometries([state], ccrs.PlateCarree(),
                           facecolor=facecolor, edgecolor=edgecolor)
     
+    # Plot AT Course
     ax.add_geometries([track], ccrs.PlateCarree(),facecolor='none', edgecolor='red', linewidth=2)
-    
-    #plt.plot(line[:,0], line[:,1], 'r', linewidth=3.0)
-    #plt.plot([-84.1939],[34.6272], 'bo', [-68.9216],[45.9044], 'bo')
 
+    # # Show Springer and Katahdin
+    # # Coords of springer: 34.6272° N, 84.1939° W
+    # # Coords of Katahdin: 45.9044° N, 68.9216° W
+    # plt.plot([-84.1939],[34.6272], 'bo', [-68.9216],[45.9044], 'bo')  
+            
+
+shapefile_name = "../testdata/AT_Centerline_12-23-2014/at_centerline"
+cLine = CenterLine(shapefile_name)
+npts = len(cLine.data)  
+
+print "Number of records: " + str(npts)
     
-segBegins = np.zeros([len(cLine.data),2])
+segBegins = np.zeros([npts,2])
 totalLen = 0.0
 for (i,s) in enumerate(cLine.data):
     segBegins[i,:] = s["POINTS"][0,:]
