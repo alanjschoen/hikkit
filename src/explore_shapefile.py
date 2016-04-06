@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-shapefile_name = "../AT_Centerline_12-23-2014/at_centerline"
+shapefile_name = "../data/AT_Centerline_12-23-2014/at_centerline"
 
 sf = shapefile.Reader(shapefile_name)
 

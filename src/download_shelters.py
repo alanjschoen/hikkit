@@ -21,7 +21,7 @@ xhtml = f.read().decode('utf-8')
 
 def writeSqlite(shelters):
 # Store in sqlite database
-    conn = sqlite3.connect('../data/shelters.db')
+    conn = sqlite3.connect('../output/shelters.db')
     #conn.execute('''DROP TABLE shelters''')
     conn.execute('''CREATE TABLE shelters
                  (_id INTEGER PRIMARY KEY, Name text, NoboMile real, Elev real, County text, State text)''')
@@ -40,7 +40,7 @@ def writeFlat(shelters):
     f.close()
 
 
-fname = "../rawdata/shelters_table.html"
+fname = "../data/shelters_table.html"
 output_type  = "FLAT"
 
 f = open(fname, 'r')

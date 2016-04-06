@@ -7,7 +7,7 @@ Created on Sun Mar 27 20:17:27 2016
 
 import sqlite3
 
-conn = sqlite3.connect('../data/shelters.db')
+conn = sqlite3.connect('../output/shelters.db')
 
 print "Tables:"
 for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'"):
