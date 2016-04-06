@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 23 13:16:34 2016
+Reads AT centerline shapefile obtained from ATC webpage
+Implements CenterLine class to store information
 
 @author: alanschoen
 """

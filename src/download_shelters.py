@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Mar 27 19:30:07 2016
+Processes list of shelters obtained from http://tnlandforms.us/at/
+Takes HTML table input, produces CSV file or SQlite database
 
 @author: alanschoen
 """
@@ -10,14 +12,14 @@ from bs4 import BeautifulSoup
 import sqlite3
 
 
-"""
-import urllib
-# get website content
-target = 'http://tnlandforms.us/at/'
-req = urllib.request.Request(url=target)
-f = urllib.request.urlopen(req)
-xhtml = f.read().decode('utf-8')
-"""
+def fetchHTML():
+    import urllib
+    # get website content
+    target = 'http://tnlandforms.us/at/'
+    req = urllib.request.Request(url=target)
+    f = urllib.request.urlopen(req)
+    xhtml = f.read().decode('utf-8')
+    return xhtml
 
 def writeSqlite(shelters):
 # Store in sqlite database
@@ -40,7 +42,7 @@ def writeFlat(shelters):
     f.close()
 
 
-fname = "../data/shelters_table.html"
+fname = "../testdata/shelters_table.html"
 output_type  = "FLAT"
 
 f = open(fname, 'r')
@@ -49,7 +51,7 @@ f.close()
 
 headings = ["Name","NoboMile","MilesToNext","Elev","County","State","Waypoint"]
 
-soup = BeautifulSoup(html)
+soup = BeautifulSoup(html, "lxml")
 table = soup.find("table", attrs={"class":"boldtable"})
 
 # The first tr contains the field names.
