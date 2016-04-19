@@ -13,7 +13,7 @@ import cartopy.crs as ccrs
 import cartopy.io.shapereader as shpreader
 import cartopy
 
-from read_shapefile import CenterLine
+from readatc import CenterLine
 import numpy as np
 
 def plotSeg(seg):
@@ -64,14 +64,24 @@ def plotMap(line):
 
 shapefile_name = "../testdata/AT_Centerline_12-23-2014/at_centerline"
 cLine = CenterLine(shapefile_name)
-npts = len(cLine.data)  
 
-print "Number of records: " + str(npts)
-    
+npts = len(cLine.data)
 segBegins = np.zeros([npts,2])
-totalLen = 0.0
 for (i,s) in enumerate(cLine.data):
     segBegins[i,:] = s["POINTS"][0,:]
-    totalLen += float(s["2D_Miles"])
-
 plotMap(segBegins)
+
+cLine.separateAlternate()
+#cLine.autoHike()
+cLine.hikeNoFlip()
+
+npts = len(cLine.data)
+segBegins = np.zeros([npts,2])
+for (i,s) in enumerate(cLine.data):
+    segBegins[i,:] = s["POINTS"][0,:]
+plotMap(segBegins)
+
+
+    
+
+

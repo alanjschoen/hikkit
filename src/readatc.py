@@ -31,8 +31,6 @@ class CenterLine:
         self.alt = []
         self.unused = []
         self.read(self.filename)
-        self.separateAlternate()
-        self.autoHike()
         
     def read(self, fname):
         sf = shapefile.Reader(fname)
@@ -61,12 +59,7 @@ class CenterLine:
             d["ORDER"] = i
         print "Read %d trail sections from %s" % (len(data), fname)
         self.data = data
-
-    def deleteNull(self):
-        numNull = 0
-        numOne = 0
-        print "Deleting %d null segments" % (numNull)
-        print "Deleting %d sements with only one point" % (numOne)
+        
     def separateAlternate(self):
         for d in self.data:
             if not d["STATUS"] == 'Official A.T. Route':
@@ -125,10 +118,8 @@ class CenterLine:
             del queue[next_qInd%nQ]
         self.data = hikeData
         self.unused = [data[q[0]] for q in queue]
-        print "Reached Katahdin. Fleeing Baxter State Security Service (B.S. S.S.)"
+        print "Reached Katahdin. Fleeing Baxter State Security Service (BS-SS)."
         print "Flipped %d sections.  %d were already straight." % (numFlipped, numStraight)
-            
-
 
 """
 import geocoder
