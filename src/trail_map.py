@@ -72,8 +72,7 @@ for (i,s) in enumerate(cLine.data):
 plotMap(segBegins)
 
 cLine.separateAlternate()
-#cLine.autoHike()
-cLine.hikeNoFlip()
+cLine.autoHike()
 
 npts = len(cLine.data)
 segBegins = np.zeros([npts,2])
