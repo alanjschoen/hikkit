@@ -120,7 +120,8 @@ class CenterLine:
         self.unused = [data[q[0]] for q in queue]
         print "Reached Katahdin. Fleeing Baxter State Security Service (BS-SS)."
         print "Flipped %d sections.  %d were already straight." % (numFlipped, numStraight)
-
+        print "%d sections were unused, like screws lying on the table." % (len(self.unused))
+        
 """
 import geocoder
 g = geocoder.elevation([34.6272, -84.1939]) #need to reverse order

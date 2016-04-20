@@ -79,8 +79,3 @@ segBegins = np.zeros([npts,2])
 for (i,s) in enumerate(cLine.data):
     segBegins[i,:] = s["POINTS"][0,:]
 plotMap(segBegins)
-
-
-    
-
-
