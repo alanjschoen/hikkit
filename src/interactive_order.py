@@ -34,8 +34,8 @@ def interact(data):
     # List beginnings of segments
     segInfo = []
     for (i,s) in enumerate(data):
-        segB = s["POINTS"][0,:]
-        segE = s["POINTS"][-1,:]
+        segB = s.points[0,:]
+        segE = s.points[-1,:]
         segInfo.append((i, segB, segE))
     
     # go through each segment and find the next segment
@@ -56,8 +56,8 @@ def interact(data):
             sInd = queue[qInd][0]
 
             
-            plt.plot(data[sInd]["POINTS"][:,0], data[sInd]["POINTS"][:,1], color=colors[i], linestyle="-")
-            plt.plot(data[sInd]["POINTS"][-1,0], data[sInd]["POINTS"][-1,1], color=colors[i], marker="^")
+            plt.plot(data[sInd].points[:,0], data[sInd].points[:,1], color=colors[i], linestyle="-")
+            plt.plot(data[sInd].points[-1,0], data[sInd].points[-1,1], color=colors[i], marker="^")
         plt.show()
         command = raw_input().strip().split(' ')
         special = ""
@@ -70,8 +70,8 @@ def interact(data):
             next_sInd = queue[next_qInd][0]
             
             if special == "rev":
-                data[next_sInd]["POINTS"] = data[next_sInd]["POINTS"][::-1,:]
-            curpt = data[next_sInd]["POINTS"][-1,:]
+                data[next_sInd].points = data[next_sInd].points[::-1,:]
+            curpt = data[next_sInd].points[-1,:]
             hikeData.append(data[next_sInd])
             hike_path.append((special, next_sInd))
             print next_sInd

@@ -19,9 +19,9 @@ import numpy as np
 def plotSeg(seg):
     if len(seg)>1:
         for s in seg:
-            plt.plot(s["POINTS"][:,0], s["POINTS"][:,1])
+            plt.plot(s.points[:,0], s.points[:,1])
     else:
-        plt.plot(seg["POINTS"][:,0], seg["POINTS"][:,1])
+        plt.plot(seg.points[:,0], seg.points[:,1])
         
         
 def plotMap(line):
@@ -68,14 +68,14 @@ cLine = CenterLine(shapefile_name)
 npts = len(cLine.data)
 segBegins = np.zeros([npts,2])
 for (i,s) in enumerate(cLine.data):
-    segBegins[i,:] = s["POINTS"][0,:]
+    segBegins[i,:] = s.points[0,:]
 plotMap(segBegins)
 
-cLine.separateAlternate()
 cLine.autoHike()
 
 npts = len(cLine.data)
 segBegins = np.zeros([npts,2])
 for (i,s) in enumerate(cLine.data):
-    segBegins[i,:] = s["POINTS"][0,:]
+    segBegins[i,:] = s.points[0,:]
 plotMap(segBegins)
+

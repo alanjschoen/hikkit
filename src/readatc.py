@@ -15,13 +15,26 @@ def getNearbySegs(pt, rad, data):
     ll = []
     ur = []
     for (ind,seg) in enumerate(data):
-        ll.append(seg["BBOX"][0:2])
-        ur.append(seg["BBOX"][2:4])
+        ll.append(seg.bbox[0:2])
+        ur.append(seg.bbox[2:4])
     llDist = [coords2dist(pt, rpt) for rpt in ll]
     urDist = [coords2dist(pt, rpt) for rpt in ur]
     
     (closeSegInds,) = np.where(np.logical_or((llDist < rad), (urDist < rad)))   
     return [data[i] for i in closeSegInds.tolist()]
+
+class Segment:
+    def __init__(self, record, shape):      
+        self.status = record["STATUS"]
+        self.surface = record["SURFACE"]
+        self.club = record["CLUB"]
+        self.length_miles = record["2D_Miles"]
+        self.region = record["ATC_REGION"]
+        self.feat_name = record["FEAT_NAME"]
+        self.shared_use = record["SHARED_USE"]
+        self.SOURCE = record["SOURCE"]
+        self.bbox = shape.bbox
+        self.points = np.array(shape.points)
 
 class CenterLine:
     def __init__(self, in_filename):
@@ -34,40 +47,41 @@ class CenterLine:
         
     def read(self, fname):
         sf = shapefile.Reader(fname)
-        
         records = sf.records();
-        
         fields = sf.fields # fields has extra DeletionFlag field
         shapes = sf.shapes() #bbox, points
-        
         data = []
-        fieldNames = fields[1:]
+        alt = []
+        del fields[0]
+        fieldNames = []
+        for field in fields:
+            fieldNames.append(field[0])
+        
         
         keepFields = ['STATUS', 'SURFACE', 'CLUB', '2D_Miles', '2D_Feet', 'ATC_REGION', 'FEAT_NAME', 'SHARED_USE', 'SOURCE']
+        fieldInds = []
+        for (ind,fn) in enumerate(fieldNames):
+                if fn in keepFields:
+                    fieldInds.append(ind)
+        
+        
         for (r,s) in zip(records, shapes):
             if not s.points:
                 continue
-            tmpShape = {}
-            for (ind,fn) in enumerate(fieldNames):
-                if fn[0] in keepFields:
-                    tmpShape[fn[0]] = r[ind]
-                    tmpShape["POINTS"] = np.array(s.points)
-                    tmpShape["BBOX"] = s.bbox
-            data.append(tmpShape)
-        #(self.data, self.alt, self.unused) = self.doHike(data)
-        for (i,d) in enumerate(data):
-            d["ORDER"] = i
+            record = {}
+            for (ind,fn) in zip(fieldInds, keepFields):
+                record[fn] = r[ind]
+            
+            seg = Segment(record, s)
+            if seg.status == 'Official A.T. Route':
+                data.append(seg)
+            else:
+                alt.append(seg)
+        
         print "Read %d trail sections from %s" % (len(data), fname)
         self.data = data
-        
-    def separateAlternate(self):
-        for d in self.data:
-            if not d["STATUS"] == 'Official A.T. Route':
-                self.alt.append(d)
-                self.data.remove(d)
-        print "Removing %d alternate-route segments" % (len(self.alt))
-            
-        
+        self.alt = alt
+         
     # Hike through AT, ordering sections and removing alternate routes
     def autoHike(self):
         print "Simulating NoBo AT through hike..."
@@ -76,8 +90,8 @@ class CenterLine:
         # List beginnings of segments
         segInfo = []
         for (i,s) in enumerate(data):
-            segB = s["POINTS"][0,:]
-            segE = s["POINTS"][-1,:]
+            segB = s.points[0,:]
+            segE = s.points[-1,:]
             segInfo.append((i, segB, segE))
         # go through each segment and find the next segment
         queue = list(segInfo)
@@ -108,11 +122,11 @@ class CenterLine:
     
             next_sInd = queue[next_qInd%nQ][0]
             if next_qInd > nQ:
-                data[next_sInd]["POINTS"] = data[next_sInd]["POINTS"][::-1,:]
+                data[next_sInd].points = data[next_sInd].points[::-1,:]
                 numFlipped += 1
             else:
                 numStraight += 1
-            curpt = data[next_sInd]["POINTS"][-1,:]
+            curpt = data[next_sInd].points[-1,:]
             hikeData.append(data[next_sInd])
             hikePath.append(next_sInd)
             del queue[next_qInd%nQ]

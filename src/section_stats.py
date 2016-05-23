@@ -21,9 +21,9 @@ cLine.autoHike()
 lens = []
 gaps = []
 for (i,s) in enumerate(cLine.data):
-    lens.append(float(s["2D_Miles"]))
+    lens.append(float(s.length_miles))
     if i>0:
-        gaps.append(coords2dist(s["POINTS"][0,:], cLine.data[i-1]["POINTS"][0,:]))
+        gaps.append(coords2dist(s.points[0,:], cLine.data[i-1].points[0,:]))
 
 
 # the histogram of the data
