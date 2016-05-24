@@ -30,6 +30,13 @@ def vincentyDist(c1, c2):
     c1 = tuple(c1[::-1])
     c2 = tuple(c2[::-1])
     return vincenty(c1, c2).miles
+    
+# Gets vincenty distance more quickly by discarding longer distances
+def quickDist(pt1, pt2):
+    if abs(pt1[1] - pt2[1]) > 0.3:
+        return 100
+    else:
+        return vincentyDist(pt1, pt2)
 
 """
 def vincentyDist():

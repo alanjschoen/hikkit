@@ -9,32 +9,14 @@ Implements CenterLine class to store information
 
 import shapefile
 import numpy as np
-from geomath import vincentyDist
-    
-def getNearbySegs(pt, rad, data):
-    ll = []
-    ur = []
-    for (ind,seg) in enumerate(data):
-        ll.append(seg.bbox[0:2])
-        ur.append(seg.bbox[2:4])
-    llDist = [coords2dist(pt, rpt) for rpt in ll]
-    urDist = [coords2dist(pt, rpt) for rpt in ur]
-    
-    (closeSegInds,) = np.where(np.logical_or((llDist < rad), (urDist < rad)))   
-    return [data[i] for i in closeSegInds.tolist()]
-    
-def quickDist(pt1, pt2):
-    if (pt1[1] - pt2[1]) > 0.5:
-        return 100
-    else:
-        return vincentyDist(pt1, pt2)
+from geomath import quickDist
 
 class Segment:
     def __init__(self, record, shape):      
         self.status = record["STATUS"]
         self.surface = record["SURFACE"]
         self.club = record["CLUB"]
-        self.length_miles = record["2D_Miles"]
+        self.miles = record["2D_Miles"]
         self.region = record["ATC_REGION"]
         self.feat_name = record["FEAT_NAME"]
         self.shared_use = record["SHARED_USE"]
@@ -66,10 +48,8 @@ class CenterLine:
         
         keepFields = ['STATUS', 'SURFACE', 'CLUB', '2D_Miles', '2D_Feet', 'ATC_REGION', 'FEAT_NAME', 'SHARED_USE', 'SOURCE']
         fieldInds = []
-        for (ind,fn) in enumerate(fieldNames):
-                if fn in keepFields:
-                    fieldInds.append(ind)
-        
+        for (ind,fn) in enumerate(keepFields):
+            fieldInds.append(fieldNames.index(fn))
         
         for (r,s) in zip(records, shapes):
             if not s.points:
@@ -127,7 +107,7 @@ class CenterLine:
             #ind = np.argmin(np.sum(np.abs(curpt - segBegins), axis=1))
     
             next_sInd = queue[next_qInd%nQ][0]
-            if next_qInd > nQ:
+            if next_qInd >= nQ:
                 data[next_sInd].points = data[next_sInd].points[::-1,:]
                 numFlipped += 1
             else:
