@@ -9,7 +9,7 @@ Implements CenterLine class to store information
 
 import shapefile
 import numpy as np
-from geomath import coords2dist
+from geomath import vincentyDist
     
 def getNearbySegs(pt, rad, data):
     ll = []
@@ -22,6 +22,12 @@ def getNearbySegs(pt, rad, data):
     
     (closeSegInds,) = np.where(np.logical_or((llDist < rad), (urDist < rad)))   
     return [data[i] for i in closeSegInds.tolist()]
+    
+def quickDist(pt1, pt2):
+    if (pt1[1] - pt2[1]) > 0.5:
+        return 100
+    else:
+        return vincentyDist(pt1, pt2)
 
 class Segment:
     def __init__(self, record, shape):      
@@ -111,7 +117,7 @@ class CenterLine:
         numStraight = 0
         while queue:
             nQ = len(queue)
-            dists = [coords2dist(curpt, p[1]) for p in queue] + [coords2dist(curpt, p[2]) for p in queue]
+            dists = [quickDist(curpt, p[1]) for p in queue] + [quickDist(curpt, p[2]) for p in queue]
             if min(dists) > 5:
                 # print "Distance to Baxter: " + str(np.sum(coords2dist(curpt, endpt)))
                 # print dists[:3]
