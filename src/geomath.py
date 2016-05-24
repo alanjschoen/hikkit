@@ -8,6 +8,7 @@ Math functions for cartographic things.  maybe should be called cartomath
 
 
 import math
+from geopy.distance import vincenty
 
 # Calculate distance from two coords
 # Latitude: 1 deg = 110.54 km
@@ -24,6 +25,11 @@ def coords2square( pt1, pt2 ):
     lat_dist = abs(pt1[1] - pt2[1])/(111.320*math.cos(middle_lat))*0.621371
     lon_dist = abs(pt1[0] - pt2[0])*110.54*0.621371
     return math.sqrt(lat_dist*lon_dist)
+    
+def vincentyDist(c1, c2):
+    c1 = tuple(c1[::-1])
+    c2 = tuple(c2[::-1])
+    return vincenty(c1, c2).miles
 
 """
 def vincentyDist():
